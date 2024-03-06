@@ -189,7 +189,10 @@ export class AppService implements OnApplicationBootstrap {
         console.log(`doJob results: [${results.length}]`);
         for (const accountVersion of accountVersions) {
           console.log(`doJob accountVersion: `, accountVersion);
-          if (accountVersion.modifiable_type === "Trade") {
+          if (
+            accountVersion.modifiable_type === "Trade" &&
+            accountVersion.reason !== REASON.ORDER_FULLFILLED
+          ) {
             const existedTidebitEvent = tidebitEvents?.find(
               (tidebitEvent) =>
                 tidebitEvent.type === EVENT_TYPE.SPOT_TRADE_MATCH &&
@@ -197,7 +200,10 @@ export class AppService implements OnApplicationBootstrap {
                   accountVersion.id
                 )
             );
-            console.log(`doJob existedTidebitEvent(SPOT_TRADE_MATCH): `, existedTidebitEvent);
+            console.log(
+              `doJob existedTidebitEvent(SPOT_TRADE_MATCH): `,
+              existedTidebitEvent
+            );
             if (existedTidebitEvent) continue;
             const relatedAccountVersions = accountVersions.filter(
               (av) =>

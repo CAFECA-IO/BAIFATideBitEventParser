@@ -181,6 +181,20 @@ export class CommonService {
     return tidebitEvent;
   }
 
+  findAccountVersion(
+    accountVersions: AccountVersion[],
+    memberId: number,
+    reason: number,
+    currency: number
+  ) {
+    return accountVersions.find(
+      (accountVersion) =>
+        accountVersion.member_id.toString() === memberId.toString() &&
+        accountVersion.reason.toString() === reason.toString() &&
+        accountVersion.currency.toString() === currency.toString()
+    );
+  }
+
   convertTrade(
     accountVersions: AccountVersion[],
     askOrder: Order,
@@ -219,33 +233,29 @@ export class CommonService {
       currency1 = this.currencyMap[makerOrder.bid].code.toUpperCase();
       currency2 = this.currencyMap[makerOrder.ask].code.toUpperCase();
     }
-    makerAccountVersionAdded = accountVersions.find((accountVersion) =>
-      accountVersion.reason === REASON.STRIKE_ADD &&
-      accountVersion.member_id === makerOrder.member_id &&
-      makerOrder.type === TYPE.ORDER_ASK
-        ? accountVersion.currency === makerOrder.bid
-        : accountVersion.currency === makerOrder.ask
+    makerAccountVersionAdded = this.findAccountVersion(
+      accountVersions,
+      makerOrder.member_id,
+      REASON.STRIKE_ADD,
+      makerOrder.type === TYPE.ORDER_ASK ? makerOrder.bid : makerOrder.ask
     );
-    makerAccountVersionSubbed = accountVersions.find((accountVersion) =>
-      accountVersion.reason === REASON.STRIKE_SUB &&
-      accountVersion.member_id === makerOrder.member_id &&
-      makerOrder.type === TYPE.ORDER_ASK
-        ? accountVersion.currency === makerOrder.ask
-        : accountVersion.currency === makerOrder.bid
+    makerAccountVersionSubbed = this.findAccountVersion(
+      accountVersions,
+      makerOrder.member_id,
+      REASON.STRIKE_SUB,
+      makerOrder.type === TYPE.ORDER_ASK ? makerOrder.ask : makerOrder.bid
     );
-    takerAccountVersionAdded = accountVersions.find((accountVersion) =>
-      accountVersion.reason === REASON.STRIKE_ADD &&
-      accountVersion.member_id === takerOrder.member_id &&
-      takerOrder.type === TYPE.ORDER_ASK
-        ? accountVersion.currency === takerOrder.bid
-        : accountVersion.currency === takerOrder.ask
+    takerAccountVersionAdded = this.findAccountVersion(
+      accountVersions,
+      takerOrder.member_id,
+      REASON.STRIKE_ADD,
+      takerOrder.type === TYPE.ORDER_BID ? takerOrder.ask : takerOrder.bid
     );
-    takerAccountVersionSubbed = accountVersions.find((accountVersion) =>
-      accountVersion.reason === REASON.STRIKE_SUB &&
-      accountVersion.member_id === takerOrder.member_id &&
-      takerOrder.type === TYPE.ORDER_ASK
-        ? accountVersion.currency === takerOrder.ask
-        : accountVersion.currency === takerOrder.bid
+    takerAccountVersionSubbed = this.findAccountVersion(
+      accountVersions,
+      takerOrder.member_id,
+      REASON.STRIKE_SUB,
+      takerOrder.type === TYPE.ORDER_BID ? takerOrder.bid : takerOrder.ask
     );
     if (
       !makerAccountVersionAdded ||
