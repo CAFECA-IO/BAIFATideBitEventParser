@@ -214,7 +214,7 @@ export class AppService implements OnApplicationBootstrap {
             tidebitEvent = await this.convertTrade(relatedAccountVersions);
             if (tidebitEvent) {
               currentEndId = Math.max(
-                ...relatedAccountVersions.map((av) => av.id)
+                currentEndId, ...relatedAccountVersions.map((av) => av.id)
               );
               tidebitEvents.push(tidebitEvent);
             } else {
@@ -242,7 +242,7 @@ export class AppService implements OnApplicationBootstrap {
               match,
             ]);
             if (tidebitEvent) {
-              currentEndId = Math.max(accountVersion.id, match.id);
+              currentEndId = Math.max(currentEndId, accountVersion.id, match.id);
               tidebitEvents.push(tidebitEvent);
             } else {
               keepGo = true;
@@ -252,7 +252,7 @@ export class AppService implements OnApplicationBootstrap {
             tidebitEvent = await this.eventParser(
               accountVersion as AccountVersion
             );
-            currentEndId = accountVersion.id;
+            currentEndId = Math.max(currentEndId, accountVersion.id);
             console.log(`doJob tidebitEvent: `, tidebitEvent);
             if (!!tidebitEvent) tidebitEvents.push(tidebitEvent);
           }
