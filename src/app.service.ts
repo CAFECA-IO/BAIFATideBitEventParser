@@ -113,17 +113,19 @@ export class AppService implements OnApplicationBootstrap {
     accountVersion: AccountVersion
   ): Promise<TideBitEvent> {
     try {
-      let order: Order;
-      const [result1, metadata1] = await this.WAREHOUSE_DB.query(
-        `SELECT ${trades_keys_str} FROM trades WHERE id = ${accountVersion.modifiable_id} LIMIT 1;`
-      );
+      let order: Order, query2: string;
+      const query1 = `SELECT ${trades_keys_str} FROM trades WHERE id = ${accountVersion.modifiable_id} LIMIT 1;`;
+      const [result1, metadata1] = await this.WAREHOUSE_DB.query(query1);
+      console.log(`convertOrderFullfilled[${query1}] result1: `, result1);
       const trade = result1[0] as Trade;
       if (accountVersion.member_id === trade.ask_member_id) {
-        const [result2, metadata2] = await this.WAREHOUSE_DB.query(
-          `SELECT ${orders_keys_str} FROM orders WHERE id = ${trade.ask_id} LIMIT 1;`
-        );
-        order = result2[0] as Order;
+        query2 = `SELECT ${orders_keys_str} FROM orders WHERE id = ${trade.ask_id} LIMIT 1;`;
+      } else if (accountVersion.member_id === trade.bid_member_id) {
+        query2 = `SELECT ${orders_keys_str} FROM orders WHERE id = ${trade.bid_id} LIMIT 1;`;
       }
+      const [result2, metadata2] = await this.WAREHOUSE_DB.query(query2);
+      console.log(`convertOrderFullfilled[${query2}] result2: `, result2);
+      order = result2[0] as Order;
       const tidebitEvent = this.commonService.convertOrderFullfilled(
         accountVersion,
         order
@@ -214,7 +216,8 @@ export class AppService implements OnApplicationBootstrap {
             tidebitEvent = await this.convertTrade(relatedAccountVersions);
             if (tidebitEvent) {
               currentEndId = Math.max(
-                currentEndId, ...relatedAccountVersions.map((av) => av.id)
+                currentEndId,
+                ...relatedAccountVersions.map((av) => av.id)
               );
               tidebitEvents.push(tidebitEvent);
             } else {
@@ -242,7 +245,11 @@ export class AppService implements OnApplicationBootstrap {
               match,
             ]);
             if (tidebitEvent) {
-              currentEndId = Math.max(currentEndId, accountVersion.id, match.id);
+              currentEndId = Math.max(
+                currentEndId,
+                accountVersion.id,
+                match.id
+              );
               tidebitEvents.push(tidebitEvent);
             } else {
               keepGo = true;
