@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { currencies } from "src/constants/coins";
-import { EVENT_CODE, EVENT_TYPE, REASON, TYPE } from "src/constants/constants";
-import { markets } from "src/constants/markets";
-import { AccountVersion } from "src/interfaces/i_account_version";
-import { Currency } from "src/interfaces/i_currency";
-import { Market } from "src/interfaces/i_market";
-import { Order } from "src/interfaces/i_order";
-import { ReferralCommission } from "src/interfaces/i_refferal_commission";
-import { TideBitEvent } from "src/interfaces/i_tidebit_event";
+import { currencies } from "../constants/coins";
+import { EVENT_CODE, EVENT_TYPE, REASON, TYPE } from "../constants/constants";
+import { markets } from "../constants/markets";
+import { AccountVersion } from "../interfaces/i_account_version";
+import { Currency } from "../interfaces/i_currency";
+import { Market } from "../interfaces/i_market";
+import { Order } from "../interfaces/i_order";
+import { ReferralCommission } from "../interfaces/i_refferal_commission";
+import { TideBitEvent } from "../interfaces/i_tidebit_event";
 
 @Injectable()
 export class CommonService {

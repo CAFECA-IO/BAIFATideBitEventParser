@@ -31,8 +31,7 @@ export class AppService implements OnApplicationBootstrap {
   constructor(private readonly commonService: CommonService) {}
 
   onApplicationBootstrap() {
-    console.log("應用啟動後，所有模組初始化完畢，此時在服務中調用");
-    // 在這裡執行初始化後的操作
+    this.parser();
   }
 
   async convertDeposit(accountVersion: AccountVersion): Promise<TideBitEvent> {
