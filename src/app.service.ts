@@ -168,6 +168,7 @@ export class AppService implements OnApplicationBootstrap {
       const jobStartId: number =
         (jobStatus[0] as { parsed_id: number })?.parsed_id || 0;
       console.log(`doJob, jobStartId: ${jobStartId}`, jobStatus);
+      currentEndId = jobStartId;
 
       // step1.1: check latest id from warehouse
       const [latestIdResults, latestIdMetadata] = await this.WAREHOUSE_DB.query(
