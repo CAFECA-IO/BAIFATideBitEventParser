@@ -84,6 +84,7 @@ export class AppService implements OnApplicationBootstrap {
     accountVersions: AccountVersion[]
   ): Promise<TideBitEvent | null> {
     try {
+      console.log(`convertTrade accountVersions: `, accountVersions);
       const [result3, metadata3] = await this.WAREHOUSE_DB.query(
         `SELECT ${trades_keys_str} FROM trades WHERE id = ${accountVersions[0].modifiable_id} LIMIT 1;`
       );
@@ -196,6 +197,7 @@ export class AppService implements OnApplicationBootstrap {
                   accountVersion.id
                 )
             );
+            console.log(`doJob existedTidebitEvent(SPOT_TRADE_MATCH): `, existedTidebitEvent);
             if (existedTidebitEvent) continue;
             const relatedAccountVersions = accountVersions.filter(
               (av) =>
@@ -319,29 +321,38 @@ export class AppService implements OnApplicationBootstrap {
         _beginId: number,
         _endId: number,
         _begin: number,
-        _end: number;
+        _end: number,
+        order: string = "DESC",
+        whereClause = "1=1";
       if (beginId && !endId) {
         _beginId = Number(beginId);
         _endId = _beginId + _limit - 1;
       } else if (!beginId && endId) {
         _endId = Number(endId);
-        _beginId = _endId - _limit + 1;
+        _beginId = _endId - _limit + 1 > 0 ? _endId - _limit + 1 : 1;
+      } else {
+        _beginId = Number(beginId);
+        _endId = Number(endId);
       }
       let conditions = [];
       if (_beginId && _endId) {
         conditions.push(`id BETWEEN ${_beginId} AND ${_endId}`);
+        order = "ASC";
       } else if (begin) {
         // Assuming 'occurred_at' is in UNIX timestamp format
         _begin = Number(begin);
         conditions.push(`occurred_at >= ${_begin}`);
+        order = "ASC";
       } else if (end) {
         _end = Number(end);
         conditions.push(`occurred_at <= ${_end}`);
+        if (!begin) order = "DESC";
       }
 
-      const whereClause =
-        conditions.length > 0 ? conditions.join(" AND ") : "1=1";
-      const queryString = `SELECT * FROM accounting_events WHERE ${whereClause} ORDER BY id LIMIT ${_limit};`;
+      if (conditions.length > 0) {
+        whereClause = conditions.join(" AND ");
+      }
+      const queryString = `SELECT * FROM accounting_events WHERE ${whereClause} ORDER BY id ${order} LIMIT ${_limit};`;
       const [results, metadata] = await this.WAREHOUSE_DB.query(queryString);
       events = results
         ? results.map((result: any) => ({

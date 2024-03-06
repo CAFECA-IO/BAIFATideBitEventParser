@@ -219,25 +219,33 @@ export class CommonService {
       currency1 = this.currencyMap[makerOrder.bid].code.toUpperCase();
       currency2 = this.currencyMap[makerOrder.ask].code.toUpperCase();
     }
-    makerAccountVersionAdded = accountVersions.find(
-      (accountVersion) =>
-        accountVersion.reason === REASON.STRIKE_ADD &&
-        accountVersion.member_id === makerOrder.member_id
+    makerAccountVersionAdded = accountVersions.find((accountVersion) =>
+      accountVersion.reason === REASON.STRIKE_ADD &&
+      accountVersion.member_id === makerOrder.member_id &&
+      makerOrder.type === TYPE.ORDER_ASK
+        ? accountVersion.currency === makerOrder.bid
+        : accountVersion.currency === makerOrder.ask
     );
-    makerAccountVersionSubbed = accountVersions.find(
-      (accountVersion) =>
-        accountVersion.reason === REASON.STRIKE_SUB &&
-        accountVersion.member_id === makerOrder.member_id
+    makerAccountVersionSubbed = accountVersions.find((accountVersion) =>
+      accountVersion.reason === REASON.STRIKE_SUB &&
+      accountVersion.member_id === makerOrder.member_id &&
+      makerOrder.type === TYPE.ORDER_ASK
+        ? accountVersion.currency === makerOrder.ask
+        : accountVersion.currency === makerOrder.bid
     );
-    takerAccountVersionAdded = accountVersions.find(
-      (accountVersion) =>
-        accountVersion.reason === REASON.STRIKE_ADD &&
-        accountVersion.member_id === takerOrder.member_id
+    takerAccountVersionAdded = accountVersions.find((accountVersion) =>
+      accountVersion.reason === REASON.STRIKE_ADD &&
+      accountVersion.member_id === takerOrder.member_id &&
+      takerOrder.type === TYPE.ORDER_ASK
+        ? accountVersion.currency === takerOrder.bid
+        : accountVersion.currency === takerOrder.ask
     );
-    takerAccountVersionSubbed = accountVersions.find(
-      (accountVersion) =>
-        accountVersion.reason === REASON.STRIKE_SUB &&
-        accountVersion.member_id === takerOrder.member_id
+    takerAccountVersionSubbed = accountVersions.find((accountVersion) =>
+      accountVersion.reason === REASON.STRIKE_SUB &&
+      accountVersion.member_id === takerOrder.member_id &&
+      takerOrder.type === TYPE.ORDER_ASK
+        ? accountVersion.currency === takerOrder.ask
+        : accountVersion.currency === takerOrder.bid
     );
     if (
       !makerAccountVersionAdded ||
