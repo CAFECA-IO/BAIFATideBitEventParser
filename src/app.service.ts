@@ -234,12 +234,14 @@ export class AppService implements OnApplicationBootstrap {
             );
             console.log(`doJob existedTidebitEvent: `, existedTidebitEvent);
             if (existedTidebitEvent) continue;
-            const match = accountVersions.find(
+            const matchIndex = accountVersions.findIndex(
               (matchAv) =>
                 matchAv.reason.toString() ===
                   REASON_PAIRS[accountVersion.reason.toString()] &&
                 matchAv.modifiable_id === accountVersion.modifiable_id
             );
+            const match = { ...accountVersions[matchIndex] };
+            console.log(`doJob match: `, match);
             tidebitEvent = this.commonService.withdrawParser([
               accountVersion,
               match,
