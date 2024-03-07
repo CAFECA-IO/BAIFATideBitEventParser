@@ -234,12 +234,18 @@ export class AppService implements OnApplicationBootstrap {
             );
             console.log(`doJob existedTidebitEvent: `, existedTidebitEvent);
             if (existedTidebitEvent) continue;
-            const matchIndex = accountVersions.findIndex(
-              (matchAv) =>
-                matchAv.reason.toString() ===
-                  REASON_PAIRS[accountVersion.reason.toString()] &&
+            const matchIndex = accountVersions.findIndex((matchAv) => {
+              const matchAvReasonStr = matchAv.reason
+                ? matchAv.reason.toString()
+                : "";
+              const accountVersionReasonStr = accountVersion.reason
+                ? accountVersion.reason.toString()
+                : "";
+              return (
+                matchAvReasonStr === REASON_PAIRS[accountVersionReasonStr] &&
                 matchAv.modifiable_id === accountVersion.modifiable_id
-            );
+              );
+            });
             const match = { ...accountVersions[matchIndex] };
             console.log(`doJob match: `, match);
             tidebitEvent = this.commonService.withdrawParser([
