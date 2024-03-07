@@ -256,7 +256,7 @@ export class AppService implements OnApplicationBootstrap {
               currentEndId = Math.max(
                 currentEndId,
                 accountVersion.id,
-                match.id
+                match?.id || 0
               );
               tidebitEvents.push(tidebitEvent);
             } else {
