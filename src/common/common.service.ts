@@ -96,10 +96,11 @@ export class CommonService {
     const withdrawFeeAccountVeresion = accountVersions.find(
       (av) => av.reason === REASON[`WITHDRAW_FEE${type ? `_${type}` : ""}`]
     );
-    if (!withdrawAccountVeresion || !withdrawFeeAccountVeresion) {
+    if (!withdrawAccountVeresion) {
+      // if (!withdrawAccountVeresion || !withdrawFeeAccountVeresion) { // In case of withdrawFeeAccountVeresion is null, we still can create withdraw event (20240307 - tzuhan)
       // Deprecated: [debug] (20240229 - tzuhan)
       console.error(
-        `[convertWithdraw] withdrawAccountVeresion or withdrawFeeAccountVeresion is null, accountVersions: `,
+        `[convertWithdraw] withdrawAccountVeresion is null, accountVersions: `,
         accountVersions
       );
       return null;
@@ -122,10 +123,11 @@ export class CommonService {
         new Date(withdrawAccountVeresion.created_at)
       ),
       created_at: this.getTimestamp(new Date()),
-      account_version_ids: JSON.stringify([
-        withdrawAccountVeresion.id,
-        withdrawFeeAccountVeresion.id,
-      ]),
+      account_version_ids: JSON.stringify(
+        withdrawFeeAccountVeresion
+          ? [withdrawAccountVeresion.id, withdrawFeeAccountVeresion.id]
+          : [withdrawAccountVeresion.id]
+      ),
     };
     return tidebitEvent;
   }
