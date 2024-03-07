@@ -8,9 +8,9 @@ import { Market } from "../interfaces/i_market";
 import { Order } from "../interfaces/i_order";
 import { ReferralCommission } from "../interfaces/i_refferal_commission";
 import { TideBitEvent } from "../interfaces/i_tidebit_event";
-import { Code, TCode } from "src/type/t_code";
-import { IResponse } from "src/interfaces/i_response";
-import { Event } from "src/interfaces/i_event";
+import { Code, TCode } from "../type/t_code";
+import { IResponse } from "../interfaces/i_response";
+import { Event } from "../interfaces/i_event";
 
 @Injectable()
 export class CommonService {
