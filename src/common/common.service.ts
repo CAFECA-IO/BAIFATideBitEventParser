@@ -8,6 +8,9 @@ import { Market } from "../interfaces/i_market";
 import { Order } from "../interfaces/i_order";
 import { ReferralCommission } from "../interfaces/i_refferal_commission";
 import { TideBitEvent } from "../interfaces/i_tidebit_event";
+import { Code, TCode } from "src/type/t_code";
+import { IResponse } from "src/interfaces/i_response";
+import { Event } from "src/interfaces/i_event";
 
 @Injectable()
 export class CommonService {
@@ -327,5 +330,19 @@ export class CommonService {
       account_version_ids: JSON.stringify([accountVersion.id]),
     };
     return tidebitEvent;
+  }
+
+  createResponse(
+    code: TCode,
+    message: string,
+    data: Event[] | null
+  ): IResponse {
+    return {
+      powerby: "BaiFa-TideBit api 1.0.0",
+      code,
+      message,
+      success: code === Code.SUCCESS,
+      data,
+    };
   }
 }
